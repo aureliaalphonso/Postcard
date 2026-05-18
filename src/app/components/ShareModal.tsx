@@ -61,6 +61,14 @@ function StickerDisplay({ sticker }: { sticker: StickerItem }) {
                   alt=""
                   draggable={false}
                 />
+              ) : sticker.framePhotoShape === "circle" ? (
+                <svg className="size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="50" fill="#d9d9d9" />
+                </svg>
+              ) : sticker.framePhotoShape === "ellipse" ? (
+                <svg className="size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 100 100">
+                  <ellipse cx="50" cy="50" rx="50" ry="50" fill="#d9d9d9" />
+                </svg>
               ) : (
                 <div style={{ width: "100%", height: "100%", backgroundColor: "#d9d9d9" }} />
               )}
@@ -83,73 +91,6 @@ function StickerDisplay({ sticker }: { sticker: StickerItem }) {
   );
 }
 
-// ── Envelope visual ────────────────────────────────────────────────────────────
-function EnvelopeVisual({ imageUrl }: { imageUrl: string | null }) {
-  const W = 383;
-  const H = 266;
-  const cx = W / 2;
-  const topTipY = H * 0.722;
-  const botTipY = H * 0.376;
-  const leftTipX = 183;
-  const rightTipX = 200;
-  const midY = (topTipY + botTipY) / 2;
-
-  return (
-    <div style={{ position: "relative", width: "100%", aspectRatio: `${W}/${H}` }}>
-      <div style={{ position: "absolute", inset: 0, backgroundColor: "#F7E2CC", borderRadius: 4 }} />
-      {imageUrl && (
-        <div style={{ position: "absolute", top: "9%", left: "17%", width: "66%", height: "78%", overflow: "hidden", borderRadius: 3 }}>
-          <img src={imageUrl} alt="postcard front" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-        </div>
-      )}
-      <svg viewBox={`0 0 ${W} ${H}`} fill="none" preserveAspectRatio="none" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
-        <defs>
-          <filter id="sm-botFlap" x="-10%" y="-30%" width="120%" height="200%">
-            <feGaussianBlur in="SourceAlpha" stdDeviation="17.5" result="blur" />
-            <feOffset dy="4" />
-            <feComposite in2="SourceAlpha" operator="out" />
-            <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
-            <feBlend in="SourceGraphic" result="shape" />
-          </filter>
-          <filter id="sm-sideFlap" x="-5%" y="-5%" width="110%" height="110%">
-            <feDropShadow dx="4" dy="4" stdDeviation="2" floodColor="rgba(0,0,0,0.25)" />
-          </filter>
-        </defs>
-        <polygon points={`0,${H} ${cx},${botTipY} ${W},${H}`} fill="#EDCCA8" filter="url(#sm-botFlap)" />
-        <polygon points={`0,0 ${leftTipX},${midY} 0,${H}`} fill="#F0D9BC" filter="url(#sm-sideFlap)" />
-        <polygon points={`${W},0 ${rightTipX},${midY} ${W},${H}`} fill="#F0D9BC" filter="url(#sm-sideFlap)" />
-        <polygon points={`0,0 ${W},0 ${cx},${topTipY}`} fill="#F7E2CC" />
-        <line x1="0" y1="0" x2={cx} y2={topTipY} stroke="rgba(0,0,0,0.04)" strokeWidth="1" />
-        <line x1={W} y1="0" x2={cx} y2={topTipY} stroke="rgba(0,0,0,0.04)" strokeWidth="1" />
-      </svg>
-    </div>
-  );
-}
-
-// ── Card stack visual ──────────────────────────────────────────────────────────
-function CardStackVisual({ imageUrl }: { imageUrl: string | null }) {
-  const cardStyle: React.CSSProperties = {
-    position: "absolute",
-    width: 268,
-    height: 179,
-    borderRadius: 4,
-    overflow: "hidden",
-    backgroundColor: "#f7e2cc",
-    boxShadow: "4px 4px 35px rgba(0,0,0,0.25)",
-  };
-  return (
-    <div style={{ position: "relative", width: 328, height: 264 }}>
-      <div style={{ ...cardStyle, left: 20, top: 0, transform: "rotate(16.5deg)", transformOrigin: "center center" }}>
-        {imageUrl && <img src={imageUrl} alt="postcard" style={{ width: "100%", height: "100%", objectFit: "cover", transform: "scaleY(-1)" }} />}
-      </div>
-      <div style={{ ...cardStyle, left: 0, top: 85 }}>
-        {imageUrl && <img src={imageUrl} alt="postcard" style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
-      </div>
-    </div>
-  );
-}
-
-// ── Inline flip card ───────────────────────────────────────────────────────────
 function FlipCard({ postcard }: { postcard: Postcard }) {
   const [flipped, setFlipped] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -272,7 +213,6 @@ interface ShareModalProps {
 export function ShareModal({ postcard, onClose }: ShareModalProps) {
   const [copied, setCopied] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
-  const isEnvelope = postcard.displayMode === "envelope";
 
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -388,19 +328,8 @@ export function ShareModal({ postcard, onClose }: ShareModalProps) {
           ✓ Link copied to clipboard!
         </div>
 
-        {/* Visual section */}
-        {isEnvelope ? (
-          <div style={{ padding: "16px 6px 0" }}>
-            <EnvelopeVisual imageUrl={postcard.frontImageUrl} />
-          </div>
-        ) : (
-          <div style={{ display: "flex", justifyContent: "center", padding: "16px 36px 0", overflowX: "hidden" }}>
-            <CardStackVisual imageUrl={postcard.frontImageUrl} />
-          </div>
-        )}
-
-        {/* Flip card — overlaps envelope for card-sliding-out effect */}
-        <div style={{ padding: "0 16px", marginTop: isEnvelope ? -32 : 16, position: "relative", zIndex: 10 }}>
+        {/* Flip card */}
+        <div style={{ padding: "16px 16px 0", position: "relative", zIndex: 10 }}>
           <FlipCard postcard={postcard} />
         </div>
 

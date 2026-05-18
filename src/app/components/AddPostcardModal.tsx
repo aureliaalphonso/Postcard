@@ -174,9 +174,7 @@ export function AddPostcardModal({ albumId, existingPostcard, onClose, onSaved }
   const fillTargetIdRef = useRef<string | null>(null);
 
   // Display mode
-  const [displayMode, setDisplayMode] = useState<"card" | "envelope">(
-    existingPostcard?.displayMode ?? "card"
-  );
+  const displayMode = "card";
 
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
@@ -561,6 +559,24 @@ export function AddPostcardModal({ albumId, existingPostcard, onClose, onSaved }
                       alt=""
                       draggable={false}
                     />
+                  ) : sticker.framePhotoShape === "circle" ? (
+                    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+                      <svg className="absolute inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="50" fill="#d9d9d9" />
+                      </svg>
+                      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <span style={{ fontSize: "16px" }}>📷</span>
+                      </div>
+                    </div>
+                  ) : sticker.framePhotoShape === "ellipse" ? (
+                    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+                      <svg className="absolute inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 100 100">
+                        <ellipse cx="50" cy="50" rx="50" ry="50" fill="#d9d9d9" />
+                      </svg>
+                      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <span style={{ fontSize: "16px" }}>📷</span>
+                      </div>
+                    </div>
                   ) : (
                     <div
                       style={{
@@ -900,31 +916,6 @@ export function AddPostcardModal({ albumId, existingPostcard, onClose, onSaved }
             >
               🎨 Add sticker
             </button>
-          </div>
-
-          {/* ── Display mode toggle ── */}
-          <div className="mt-2 px-1 py-2 rounded-xl border border-[#E0CDB5] bg-[#FBF6F0]">
-            <p className="text-[9px] text-[#8B7060] font-semibold uppercase tracking-wider text-center mb-1.5" style={{ fontFamily: "'Lora', serif" }}>
-              How should recipients see this?
-            </p>
-            <div className="flex gap-2">
-              {(["card", "envelope"] as const).map((mode) => (
-                <button
-                  key={mode}
-                  type="button"
-                  onClick={() => setDisplayMode(mode)}
-                  className={`flex-1 flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg transition-colors text-[10px] border ${
-                    displayMode === mode
-                      ? "bg-[#2C1810] text-[#F5E8D5] border-[#2C1810]"
-                      : "bg-white text-[#6B5040] border-[#D0BFA8] hover:bg-[#EDD9C0]"
-                  }`}
-                  style={{ fontFamily: "'Lora', serif" }}
-                >
-                  <span style={{ fontSize: "18px" }}>{mode === "card" ? "📬" : "✉️"}</span>
-                  <span>{mode === "card" ? "As a card" : "In envelope"}</span>
-                </button>
-              ))}
-            </div>
           </div>
 
           {error && <p className="text-xs text-red-600 text-center mt-2">{error}</p>}

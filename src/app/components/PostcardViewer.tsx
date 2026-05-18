@@ -80,6 +80,14 @@ function StickerDisplay({ sticker }: { sticker: StickerItem }) {
                   alt=""
                   draggable={false}
                 />
+              ) : sticker.framePhotoShape === "circle" ? (
+                <svg className="size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="50" fill="#d9d9d9" />
+                </svg>
+              ) : sticker.framePhotoShape === "ellipse" ? (
+                <svg className="size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 100 100">
+                  <ellipse cx="50" cy="50" rx="50" ry="50" fill="#d9d9d9" />
+                </svg>
               ) : (
                 <div style={{ width: "100%", height: "100%", backgroundColor: "#d9d9d9" }} />
               )}
@@ -176,18 +184,6 @@ export function PostcardViewer({ postcard, onEdit, onDelete, showActions = true 
               >
                 <Trash2 size={13} />
               </button>
-            )}
-          </div>
-          {/* Display mode badge */}
-          <div
-            className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-[#D0BFA8] text-[#8B7060]"
-            style={{ fontFamily: "'Lora', serif", fontSize: "9px" }}
-            title="Sharing style — change in Edit"
-          >
-            {postcard.displayMode === "envelope" ? (
-              <>✉️ <span>Shared as envelope</span></>
-            ) : (
-              <>📬 <span>Shared as card</span></>
             )}
           </div>
         </div>

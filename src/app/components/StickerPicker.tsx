@@ -1,42 +1,37 @@
 import { useRef } from "react";
 import { ImagePlus } from "lucide-react";
 
-import frame0 from "../../imports/image-16.png";
-import frame1 from "../../imports/image-17.png";
-import frame2 from "../../imports/image-18.png";
-import frame3 from "../../imports/image-19.png";
-import frame4 from "../../imports/image-20.png";
-import frame5 from "../../imports/image-21.png";
-import frame6 from "../../imports/image-22.png";
-import frame7 from "../../imports/image-23.png";
-import frame8 from "../../imports/image-24.png";
+import frame0 from "../../imports/Group5-3/285f0f888b77b5900ab55f6a38c37b4f768c60a3.png";
+import frame1 from "../../imports/Group6-2/dfa7b5c0bb5e4d6a45dfc6448a6aa40e803a6de4.png";
+import frame2 from "../../imports/Group9-2/ab958bc6befecccaa5f5396841a6d722e1dedcd0.png";
+import frame3 from "../../imports/Group10-2/3ba1c268ddfd1b61d341959e390fc7153c66c24c.png";
+import frame4 from "../../imports/Group8-2/cba613dd15efc6e4797dcad6a6593179435589f2.png";
+import frame5 from "../../imports/Group11-2/4a65c0d74149e816e95fad6b1ef7f51037d440df.png";
+import frame6 from "../../imports/Group7-2/38cf50efd085002266c78f3a97c9adf359c3778f.png";
 
 // Each frame: src, photo area positioning (%), width-to-height aspect ratio
 export interface FrameDef {
   src: string;
   photoArea: { width: string; height: string; left: string; top: string }; // CSS percentages
+  photoShape?: "rect" | "circle" | "ellipse"; // Shape type for the photo area
   aspect: number; // width / height
 }
 
 export const FRAMES: FrameDef[] = [
-  // Group5-1: portrait gold (159x238, photo at 19,33 size 113x172)
-  { src: frame0 as string, photoArea: { width: "71.1%", height: "72.3%", left: "11.9%", top: "13.9%" }, aspect: 0.67 },
-  // Group6: ornate portrait gold (162x199, photo at 26,14 size 113x172)
-  { src: frame1 as string, photoArea: { width: "69.8%", height: "86.4%", left: "16%", top: "7%" }, aspect: 0.81 },
-  // Group9: landscape gold (286x186, photo at 39,31 size 209x124)
-  { src: frame2 as string, photoArea: { width: "73.1%", height: "66.7%", left: "13.6%", top: "16.7%" }, aspect: 1.54 },
-  // Group10: gold circle (157x150, photo at 14,10 size 129x129)
-  { src: frame3 as string, photoArea: { width: "82.2%", height: "86%", left: "8.9%", top: "6.7%" }, aspect: 1.05 },
-  // Group8: dark red oval (164x194, photo at 26,24 size 115x146)
-  { src: frame4 as string, photoArea: { width: "70.1%", height: "75.3%", left: "15.9%", top: "12.4%" }, aspect: 0.85 },
-  // Group11: blue lace circle (193x189, photo at 34,32 size 125x125)
-  { src: frame5 as string, photoArea: { width: "64.8%", height: "66.1%", left: "17.6%", top: "16.9%" }, aspect: 1.02 },
-  // Group7: olive oval (148.538x180.889, photo at 17,17 size 115x146)
-  { src: frame6 as string, photoArea: { width: "77.4%", height: "80.7%", left: "11.4%", top: "9.4%" }, aspect: 0.82 },
-  // ornate portrait alt (same as frame1)
-  { src: frame7 as string, photoArea: { width: "69.8%", height: "86.4%", left: "16%", top: "7%" }, aspect: 0.81 },
-  // portrait gold alt (same as frame0)
-  { src: frame8 as string, photoArea: { width: "71.1%", height: "72.3%", left: "11.9%", top: "13.9%" }, aspect: 0.67 },
+  // Group5-3: portrait gold (159x238, photo at 19,33 size 113x172)
+  { src: frame0 as string, photoArea: { width: "71.07%", height: "72.27%", left: "11.95%", top: "13.87%" }, photoShape: "rect", aspect: 0.67 },
+  // Group6-2: ornate portrait gold (162x199, photo at 26,14 size 113x172)
+  { src: frame1 as string, photoArea: { width: "69.75%", height: "86.43%", left: "16.05%", top: "7.04%" }, photoShape: "rect", aspect: 0.81 },
+  // Group9-2: landscape gold (286x186, photo at 39,31 size 209x124)
+  { src: frame2 as string, photoArea: { width: "73.08%", height: "66.67%", left: "13.64%", top: "16.67%" }, photoShape: "rect", aspect: 1.54 },
+  // Group10-2: gold circle (157x150, photo at 14,10 size 129x129)
+  { src: frame3 as string, photoArea: { width: "82.17%", height: "86%", left: "8.92%", top: "6.67%" }, photoShape: "circle", aspect: 1.05 },
+  // Group8-2: dark red oval (164x194, photo at 26,24 size 115x146)
+  { src: frame4 as string, photoArea: { width: "70.12%", height: "75.26%", left: "15.85%", top: "12.37%" }, photoShape: "ellipse", aspect: 0.85 },
+  // Group11-2: blue lace circle (193x189, photo at 34,32 size 125x125)
+  { src: frame5 as string, photoArea: { width: "64.77%", height: "66.14%", left: "17.62%", top: "16.93%" }, photoShape: "circle", aspect: 1.02 },
+  // Group7-2: olive oval (148.538x180.889, photo at 17,17 size 115x146)
+  { src: frame6 as string, photoArea: { width: "77.42%", height: "80.72%", left: "11.44%", top: "9.4%" }, photoShape: "ellipse", aspect: 0.82 },
 ];
 
 export interface StickerItem {
@@ -45,6 +40,7 @@ export interface StickerItem {
   content: string;  // emoji char, base64 data URL for custom, frame PNG URL for frame
   fillUrl?: string; // user photo inside frame
   framePhotoArea?: { width: string; height: string; left: string; top: string }; // positioned photo div
+  framePhotoShape?: "rect" | "circle" | "ellipse"; // shape type for photo area
   frameAspect?: number; // width / height ratio of frame container
   x: number; // 0-100 percentage from left of card face
   y: number; // 0-100 percentage from top of card face
@@ -93,6 +89,7 @@ export function StickerPicker({ face, onSelect, style, pickerRef }: StickerPicke
       content: frame.src,
       fillUrl: undefined,
       framePhotoArea: frame.photoArea,
+      framePhotoShape: frame.photoShape,
       frameAspect: frame.aspect,
       scale: 1,
       rotation,

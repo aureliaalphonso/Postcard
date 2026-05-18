@@ -5,152 +5,6 @@ import { PostcardViewer } from "../components/PostcardViewer";
 import { Postcard } from "../components/AddPostcardModal";
 import { publicAnonKey } from "/utils/supabase/info";
 
-// ── Envelope visual (4-flap SVG + image inside) ───────────────────────────────
-function EnvelopeVisual({ imageUrl }: { imageUrl: string | null }) {
-  const W = 383;
-  const H = 266;
-  // Flap tips (centre of envelope)
-  const cx = W / 2;          // 191.5
-  const topTipY = H * 0.722; // ~192 — top flap points down here
-  const botTipY = H * 0.376; // ~100 — bottom flap points up here
-  const leftTipX = 183;
-  const rightTipX = 200;
-  const midY = (topTipY + botTipY) / 2; // ~146
-
-  return (
-    <div style={{ position: "relative", width: "100%", aspectRatio: `${W}/${H}` }}>
-      {/* Envelope body */}
-      <div style={{ position: "absolute", inset: 0, backgroundColor: "#F7E2CC", borderRadius: 4 }} />
-
-      {/* Postcard front image — visible through the diamond gap between flaps */}
-      {imageUrl && (
-        <div
-          style={{
-            position: "absolute",
-            top: "9%",
-            left: "17%",
-            width: "66%",
-            height: "78%",
-            overflow: "hidden",
-            borderRadius: 3,
-          }}
-        >
-          <img
-            src={imageUrl}
-            alt="postcard front"
-            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-          />
-        </div>
-      )}
-
-      {/* SVG envelope flaps drawn on top of image */}
-      <svg
-        viewBox={`0 0 ${W} ${H}`}
-        fill="none"
-        preserveAspectRatio="none"
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
-      >
-        <defs>
-          <filter id="botFlap" x="-10%" y="-30%" width="120%" height="200%">
-            <feGaussianBlur in="SourceAlpha" stdDeviation="17.5" result="blur" />
-            <feOffset dy="4" />
-            <feComposite in2="SourceAlpha" operator="out" />
-            <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
-            <feBlend in="SourceGraphic" result="shape" />
-          </filter>
-          <filter id="sideFlap" x="-5%" y="-5%" width="110%" height="110%">
-            <feDropShadow dx="4" dy="4" stdDeviation="2" floodColor="rgba(0,0,0,0.25)" />
-          </filter>
-        </defs>
-
-        {/* Bottom flap — drawn first so top/side flaps cover its upper portion */}
-        <polygon
-          points={`0,${H} ${cx},${botTipY} ${W},${H}`}
-          fill="#EDCCA8"
-          filter="url(#botFlap)"
-        />
-
-        {/* Left side flap */}
-        <polygon
-          points={`0,0 ${leftTipX},${midY} 0,${H}`}
-          fill="#F0D9BC"
-          filter="url(#sideFlap)"
-        />
-
-        {/* Right side flap */}
-        <polygon
-          points={`${W},0 ${rightTipX},${midY} ${W},${H}`}
-          fill="#F0D9BC"
-          filter="url(#sideFlap)"
-        />
-
-        {/* Top flap — drawn last, sits over everything */}
-        <polygon
-          points={`0,0 ${W},0 ${cx},${topTipY}`}
-          fill="#F7E2CC"
-        />
-
-        {/* Subtle fold line between flaps */}
-        <line
-          x1="0" y1="0" x2={cx} y2={topTipY}
-          stroke="rgba(0,0,0,0.04)" strokeWidth="1"
-        />
-        <line
-          x1={W} y1="0" x2={cx} y2={topTipY}
-          stroke="rgba(0,0,0,0.04)" strokeWidth="1"
-        />
-      </svg>
-    </div>
-  );
-}
-
-// ── Card stack visual (two fanned postcards) ──────────────────────────────────
-function CardStackVisual({ imageUrl }: { imageUrl: string | null }) {
-  const cardStyle: React.CSSProperties = {
-    position: "absolute",
-    width: 268,
-    height: 179,
-    borderRadius: 4,
-    overflow: "hidden",
-    backgroundColor: "#f7e2cc",
-    boxShadow: "4px 4px 35px rgba(0,0,0,0.25)",
-  };
-
-  return (
-    <div style={{ position: "relative", width: 328, height: 264 }}>
-      {/* Card 1 — rotated behind */}
-      <div
-        style={{
-          ...cardStyle,
-          left: 20,
-          top: 0,
-          transform: "rotate(16.5deg)",
-          transformOrigin: "center center",
-        }}
-      >
-        {imageUrl && (
-          <img
-            src={imageUrl}
-            alt="postcard"
-            style={{ width: "100%", height: "100%", objectFit: "cover", transform: "scaleY(-1)" }}
-          />
-        )}
-      </div>
-      {/* Card 2 — straight on top */}
-      <div style={{ ...cardStyle, left: 0, top: 85 }}>
-        {imageUrl && (
-          <img
-            src={imageUrl}
-            alt="postcard"
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          />
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ── Flip hint ─────────────────────────────────────────────────────────────────
 function FlipHint() {
   return (
     <div className="flex items-center gap-[7px] justify-center">
@@ -235,8 +89,6 @@ export function SharePage() {
     setTimeout(() => setCopied(false), 2000);
   }
 
-  const isEnvelope = postcard?.displayMode === "envelope";
-
   return (
     <div
       className="min-h-screen bg-white relative flex flex-col"
@@ -285,29 +137,10 @@ export function SharePage() {
         </div>
       ) : postcard ? (
         <div className="flex-1 flex flex-col">
-          {/* Visual section */}
-          {isEnvelope ? (
-            <div style={{ padding: "16px 6px 0" }}>
-              <EnvelopeVisual imageUrl={postcard.frontImageUrl} />
-            </div>
-          ) : (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                padding: "16px 36px 0",
-                overflowX: "hidden",
-              }}
-            >
-              <CardStackVisual imageUrl={postcard.frontImageUrl} />
-            </div>
-          )}
-
-          {/* PostcardViewer — overlaps slightly with envelope for "card sliding out" effect */}
+          {/* PostcardViewer */}
           <div
             style={{
-              padding: "0 16px",
-              marginTop: isEnvelope ? -32 : 16,
+              padding: "16px 16px 0",
               position: "relative",
               zIndex: 10,
             }}
