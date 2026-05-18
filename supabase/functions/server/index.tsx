@@ -556,6 +556,10 @@ app.post("/make-server-5439cc58/albums/:albumId/postcards", async (c) => {
       }
     }
 
+    const stickersRaw = body["stickers"] as string | undefined;
+    let stickers: unknown[] = [];
+    try { stickers = stickersRaw ? JSON.parse(stickersRaw) : []; } catch { stickers = []; }
+
     const postcard = {
       id: postcardId,
       albumId,
@@ -567,6 +571,8 @@ app.post("/make-server-5439cc58/albums/:albumId/postcards", async (c) => {
       mediaType: frontImageMediaType,
       stamp: body["stamp"] != null && body["stamp"] !== "" ? Number(body["stamp"]) : null,
       customStampPath,
+      displayMode: (body["displayMode"] as string | undefined) ?? "card",
+      stickers,
       createdAt: new Date().toISOString(),
     };
 
@@ -625,6 +631,10 @@ app.put("/make-server-5439cc58/postcards/:id", async (c) => {
     if (title !== undefined) postcard.title = title;
     if (text !== undefined) postcard.text = text;
     if (signature !== undefined) postcard.signature = signature;
+    if (body["displayMode"] !== undefined) postcard.displayMode = body["displayMode"] as string;
+    if (body["stickers"] !== undefined) {
+      try { postcard.stickers = JSON.parse(body["stickers"] as string); } catch { postcard.stickers = []; }
+    }
     if (body["stamp"] !== undefined) {
       postcard.stamp = body["stamp"] != null && body["stamp"] !== "" ? Number(body["stamp"]) : null;
     }
