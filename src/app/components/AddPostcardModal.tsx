@@ -543,29 +543,49 @@ export function AddPostcardModal({ albumId, existingPostcard, onClose, onSaved }
             </div>
           ) : isFrame ? (
             <div style={{ position: "relative", width: "100%", height: "100%" }}>
-              <img
-                src={sticker.fillUrl ?? "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="}
-                style={{
-                  position: "absolute", inset: 0, width: "100%", height: "100%",
-                  objectFit: "cover", clipPath: sticker.frameClip,
-                  opacity: sticker.fillUrl ? 1 : 0,
-                }}
-                alt="" draggable={false}
-              />
-              {!sticker.fillUrl && (
-                <div style={{
-                  position: "absolute", inset: 0, display: "flex", alignItems: "center",
-                  justifyContent: "center", clipPath: sticker.frameClip,
-                  background: "rgba(176,144,112,0.18)",
-                }}>
-                  <span style={{ fontSize: "16px" }}>📷</span>
+              {/* Photo area */}
+              {sticker.framePhotoArea && (
+                <div
+                  style={{
+                    position: "absolute",
+                    width: sticker.framePhotoArea.width,
+                    height: sticker.framePhotoArea.height,
+                    left: sticker.framePhotoArea.left,
+                    top: sticker.framePhotoArea.top,
+                  }}
+                >
+                  {sticker.fillUrl ? (
+                    <img
+                      src={sticker.fillUrl}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      alt=""
+                      draggable={false}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        backgroundColor: "#d9d9d9",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <span style={{ fontSize: "16px" }}>📷</span>
+                    </div>
+                  )}
                 </div>
               )}
-              <img
-                src={sticker.content}
-                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "fill", mixBlendMode: "multiply" }}
-                alt="frame" draggable={false}
-              />
+              {/* Frame border overlay */}
+              <div style={{ position: "absolute", inset: 0 }}>
+                <img
+                  src={sticker.content}
+                  alt="frame"
+                  className="size-full object-cover pointer-events-none"
+                  draggable={false}
+                />
+              </div>
             </div>
           ) : (
             <img
